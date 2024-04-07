@@ -4,6 +4,7 @@ import 'package:dio_library/screens/helper_screens/user_create_screen.dart';
 import 'package:dio_library/screens/helper_screens/user_update_screen.dart';
 import 'package:dio_library/screens/single_user/single_user_info_screen.dart';
 import 'package:dio_library/screens/widgets/show_dialog.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../blocs/user_state.dart';
@@ -16,6 +17,9 @@ class UsersScreen extends StatefulWidget {
 }
 
 class _UsersScreenState extends State<UsersScreen> {
+  FocusNode focus = FocusNode();
+  String text = "";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,117 +48,206 @@ class _UsersScreenState extends State<UsersScreen> {
             return Text(state.errorText);
           }
           if (state is UserSuccessState) {
+            List<UserModel> users = state.users
+                .where((element) =>
+                    element.name.toLowerCase().contains(text.toLowerCase()))
+                .toList();
+
             return ListView(
               children: [
-                ...List.generate(
-                  state.users.length,
-                  (index) {
-                    UserModel users = state.users[index];
-                    return Column(
-                      children: [
-                        Dismissible(
-                          key: Key(users.uuId!),
-                          confirmDismiss: (DismissDirection dis) async {
-                            bool result = false;
-                            if (dis == DismissDirection.endToStart) {
-                              result =
-                                  await showSpecialDelete(context, users.uuId!);
-                            } else {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return UserUpdateScreen(
-                                      userModel: users,
-                                    );
-                                  },
-                                ),
-                              );
-                            }
-                            return result;
+                Row(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                            top: 14,
+                            left: 12,
+                            bottom: 8,
+                            right: focus.hasFocus ? 0 : 12),
+                        child: CupertinoTextField(
+                          onChanged: (v) {
+                            text = v;
+                            setState(() {});
                           },
-                          secondaryBackground: Container(
-                            decoration: const BoxDecoration(color: Colors.red),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.all(15),
-                                  child: Text(
-                                    "O'chirish",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                ),
-                              ],
+                          prefix: Padding(
+                            padding: const EdgeInsets.only(left: 6),
+                            child: Icon(
+                              Icons.search,
+                              color: Colors.black.withOpacity(.5),
                             ),
                           ),
-                          background: Container(
-                            decoration:
-                                const BoxDecoration(color: Colors.green),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.all(15),
-                                  child: Text("Yangilash",
+                          onTap: () {
+                            focus.requestFocus();
+                            setState(() {});
+                          },
+                          cursorColor: Colors.blue,
+                          focusNode: focus,
+                          clearButtonMode: OverlayVisibilityMode.editing,
+                          placeholder: " Search",
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: Colors.grey.withOpacity(.4)),
+                        ),
+                      ),
+                    ),
+                    focus.hasFocus
+                        ? CupertinoTextSelectionToolbarButton(
+                            child: const Text(
+                              "Cancel",
+                              style: TextStyle(color: Colors.blue),
+                            ),
+                            onPressed: () {
+                              print("Hello");
+                              setState(() {});
+                              focus.unfocus();
+                            },
+                          )
+                        : SizedBox(),
+                  ],
+                ),
+                if (users.isNotEmpty)
+                  ...List.generate(
+                    users.length,
+                    (index) {
+                      return Column(
+                        children: [
+                          Dismissible(
+                            key: Key(users[index].uuId!),
+                            confirmDismiss: (DismissDirection dis) async {
+                              bool result = false;
+                              if (dis == DismissDirection.endToStart) {
+                                result = await showSpecialDelete(
+                                    context, users[index].uuId!);
+                              } else {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return UserUpdateScreen(
+                                        userModel: users[index],
+                                      );
+                                    },
+                                  ),
+                                );
+                              }
+                              return result;
+                            },
+                            secondaryBackground: Container(
+                              decoration:
+                                  const BoxDecoration(color: Colors.red),
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.all(15),
+                                    child: Text(
+                                      "O'chirish",
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 18,
-                                          fontWeight: FontWeight.w500)),
-                                ),
-                              ],
-                            ),
-                          ),
-                          child: ListTile(
-                            leading: Hero(
-                              tag: users.imageUrl,
-                              child: SizedBox(
-                                width: 55,
-                                height: 60,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(100),
-                                      child: Image.network(
-                                        users.imageUrl,
-                                        fit: BoxFit.cover,
-                                      )),
-                                ),
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return SingleInfoScreen(userModel: users);
-                                  },
-                                ),
-                              );
-                            },
-                            trailing: Text(
-                              users.activity,
-                              style: const TextStyle(fontSize: 14),
+                            background: Container(
+                              decoration:
+                                  const BoxDecoration(color: Colors.green),
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.all(15),
+                                    child: Text("Yangilash",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w500)),
+                                  ),
+                                ],
+                              ),
                             ),
-                            title: Text("${users.name} ${users.lastName}"),
-                            subtitle: Text(
-                              users.middleName,
-                              style: const TextStyle(color: Colors.black),
+                            child: ListTile(
+                              leading: Hero(
+                                tag: users[index].imageUrl,
+                                child: SizedBox(
+                                  width: 55,
+                                  height: 60,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(100),
+                                        child: Image.network(
+                                          users[index].imageUrl,
+                                          fit: BoxFit.cover,
+                                        )),
+                                  ),
+                                ),
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return SingleInfoScreen(
+                                          userModel: users[index]);
+                                    },
+                                  ),
+                                );
+                              },
+                              trailing: Text(
+                                users[index].activity,
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                              title: Text(
+                                  "${users[index].name} ${users[index].lastName}"),
+                              subtitle: Text(
+                                users[index].middleName,
+                                style: const TextStyle(color: Colors.black),
+                              ),
                             ),
                           ),
+                          Container(
+                            width: double.infinity,
+                            height: 0.4,
+                            color: Colors.black.withOpacity(.5),
+                          )
+                        ],
+                      );
+                    },
+                  )
+                else if (users.isEmpty)
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height / 3 - 30,
                         ),
-                        Container(
-                          width: double.infinity,
-                          height: 0.4,
-                          color: Colors.black.withOpacity(.5),
-                        )
+                        Icon(
+                          Icons.search,
+                          size: 62,
+                          color: Colors.black.withOpacity(.6),
+                        ),
+                        Text(
+                          "No result for \"$text\"",
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 20,
+                              color: Colors.black),
+                        ),
+                        Text(
+                          "Check the spelling on try a new speech.",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 13,
+                              color: Colors.black.withOpacity(.35)),
+                        ),
                       ],
-                    );
-                  },
-                )
+                    ),
+                  )
               ],
             );
           }
