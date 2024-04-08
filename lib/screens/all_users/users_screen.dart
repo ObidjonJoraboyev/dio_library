@@ -79,7 +79,7 @@ class _UsersScreenState extends State<UsersScreen> {
                             padding: const EdgeInsets.only(left: 6),
                             child: Icon(
                               Icons.search,
-                              color: Colors.black.withOpacity(.5),
+                              color: Colors.black.withOpacity(.4),
                             ),
                           ),
                           onTap: () {
@@ -92,7 +92,7 @@ class _UsersScreenState extends State<UsersScreen> {
                           placeholder: " Search",
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
-                              color: Colors.grey.withOpacity(.4)),
+                              color: Colors.grey.withOpacity(.35)),
                         ),
                       ),
                     ),

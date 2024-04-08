@@ -75,6 +75,7 @@ class _UserCreateScreenState extends State<UserCreateScreen> {
                             userModel: userModel.copyWith(
                           name: nameCtrl.text,
                           lastName: lastNameCtrl.text,
+                          middleName: middleNameCtrl.text,
                           age: int.parse(ageCtrl.text),
                           imageUrl:
                               "https://e7.pngegg.com/pngimages/566/296/png-clipart-christiano-ronaldo-cristiano-ronaldo-real-madrid-c-f-portugal-national-football-team-uefa-champions-league-manchester-united-f-c-portugal-face-head.png",
