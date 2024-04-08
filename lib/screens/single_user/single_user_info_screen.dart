@@ -328,12 +328,12 @@ class SingleInfoScreen extends StatelessWidget {
                           padding: const EdgeInsets.only(
                               bottom: 32, left: 16, right: 16),
                           child: UniversalTextButton(
-                              color: Colors.red,
-                              onPressed: () {
-                                showSpecialDelete(
-                                    context, userModel.uuId!, true);
-                              },
-                              text: "Delete Contact"),
+                            color: Colors.red,
+                            onPressed: () {
+                              showSpecialDelete(context, userModel.uuId!, true);
+                            },
+                            text: "Delete Contact",
+                          ),
                         ),
                       )
                     ],
