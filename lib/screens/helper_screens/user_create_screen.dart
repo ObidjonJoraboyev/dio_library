@@ -33,7 +33,18 @@ class _UserCreateScreenState extends State<UserCreateScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Yangilash"),
+        leading: Hero(
+          tag: "icon1",
+          child: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(Icons.arrow_back_ios_new)),
+        ),
+        title: const Hero(
+            tag: "appbar",
+            transitionOnUserGestures: true,
+            child: Text("Yangilash")),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18),

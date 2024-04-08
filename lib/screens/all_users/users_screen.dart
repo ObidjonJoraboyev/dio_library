@@ -20,18 +20,23 @@ class _UsersScreenState extends State<UsersScreen> {
   FocusNode focus = FocusNode();
   String text = "";
 
+  TextEditingController controller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const UserCreateScreen();
-                }));
-              },
-              icon: const Icon(Icons.add))
+          Hero(
+            tag: "icon1",
+            child: IconButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return const UserCreateScreen();
+                  }));
+                },
+                icon: const Icon(Icons.add)),
+          )
         ],
         elevation: 3,
         title: const Text("Fuqarolar"),
@@ -65,6 +70,7 @@ class _UsersScreenState extends State<UsersScreen> {
                             bottom: 8,
                             right: focus.hasFocus ? 0 : 12),
                         child: CupertinoTextField(
+                          controller: controller,
                           onChanged: (v) {
                             text = v;
                             setState(() {});
@@ -97,12 +103,13 @@ class _UsersScreenState extends State<UsersScreen> {
                               style: TextStyle(color: Colors.blue),
                             ),
                             onPressed: () {
-                              print("Hello");
+                              text = "";
+                              controller.text = "";
                               setState(() {});
                               focus.unfocus();
                             },
                           )
-                        : SizedBox(),
+                        : const SizedBox(),
                   ],
                 ),
                 if (users.isNotEmpty)
@@ -231,12 +238,17 @@ class _UsersScreenState extends State<UsersScreen> {
                           size: 62,
                           color: Colors.black.withOpacity(.6),
                         ),
-                        Text(
-                          "No result for \"$text\"",
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 20,
-                              color: Colors.black),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Text(
+                            "No result for \"$text\"",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 20,
+                                color: Colors.black),
+                          ),
                         ),
                         Text(
                           "Check the spelling on try a new speech.",

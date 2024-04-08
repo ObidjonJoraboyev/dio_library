@@ -75,28 +75,30 @@ class _UserUpdateScreenState extends State<UserUpdateScreen> {
                   label: "IELTS", textEditingController: ieltsLevelCtrl),
               UniversalTextField(
                   label: "Qiziqishi", textEditingController: favouriteCtrl),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24),
-                child: UniversalTextButton(
-                    onPressed: () async {
-                      context.read<UserBloc>().add(UpdateUserInfoEvent(
-                          userModel: userModel.copyWith(
-                              uuid: widget.userModel.uuId,
-
-                              name: nameCtrl.text,
-                              lastName: lastNameCtrl.text,
-                              age: int.parse(ageCtrl.text),
-                              activity: activityCtrl.text,
-                              middleName: middleNameCtrl.text,
-                              activityAddress: activityAddressCtrl.text,
-                              dream: dreamCtrl.text,
-                              ieltsLevel: double.tryParse(ieltsLevelCtrl.text),
-                              favourite: favouriteCtrl.text,
-                              imageUrl: widget.userModel.imageUrl)));
-                      Navigator.pop(context);
-                      widget.check ? Navigator.pop(context) : null;
-                    },
-                    text: "Tugatish"),
+              Hero(
+                tag: "ism",
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  child: UniversalTextButton(
+                      onPressed: () async {
+                        context.read<UserBloc>().add(UpdateUserInfoEvent(
+                            userModel: userModel.copyWith(
+                                uuid: widget.userModel.uuId,
+                                name: nameCtrl.text,
+                                lastName: lastNameCtrl.text,
+                                age: int.parse(ageCtrl.text),
+                                activity: activityCtrl.text,
+                                middleName: middleNameCtrl.text,
+                                activityAddress: activityAddressCtrl.text,
+                                dream: dreamCtrl.text,
+                                ieltsLevel: double.tryParse(ieltsLevelCtrl.text),
+                                favourite: favouriteCtrl.text,
+                                imageUrl: widget.userModel.imageUrl)));
+                        Navigator.pop(context);
+                        widget.check ? Navigator.pop(context) : null;
+                      },
+                      text: "Tugatish"),
+                ),
               )
             ],
           ),
